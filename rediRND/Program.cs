@@ -2,47 +2,57 @@
 {
     internal class Program
     {
-        static Container<IStaker> container = new(new IStaker[] { new User("josh"), new User("mike") });
+        public static Container<IStaker> RootContainer { get; private set; } = new Container<IStaker>(new IStaker[0]);
 
-        static Timecard timecard = new Timecard(new Dictionary<User, decimal>()
-            {
-                { (User) container[0], 5m },
-                { (User) container[1], 10m }
-            });
+        public static List<Stake> StakeLedger { get; private set; } = new List<Stake> { };
 
-        static decimal DailyGrossProfit = 300M;
+        static decimal DailyGrossProfit = 1000M;
 
         static void Main(string[] args)
         {
-            timecard.AddEntry((User)container[0], 15);
-            CalculateStake();
-            CalculateDailyProfit();
-            PrintReport();
+
+            Container<User> allUsersContainer = new Container<User>(new User[] { new User("Josh"), new User("Chris"), new User("Kelly"),
+                                                                                 new User("Mike"), new User("Garrett"), new User("Jarrad")});
+
+            Container<IStaker> payrollContainer = new Container<IStaker>(new IStaker[0]);
+            Container<IStaker> shareholderContainer = new Container<IStaker>(new IStaker[0]);
+            RootContainer.Add(payrollContainer);
+            RootContainer.Add(shareholderContainer);
+
+            shareholderContainer.Add(allUsersContainer[0]);
+            shareholderContainer.Add(allUsersContainer[1]);
+            payrollContainer.Add(allUsersContainer[0]);
+            payrollContainer.Add(allUsersContainer[1]);
+            payrollContainer.Add(allUsersContainer[2]);
+            payrollContainer.Add(allUsersContainer[3]);
+            payrollContainer.Add(allUsersContainer[4]);
+            payrollContainer.Add(allUsersContainer[5]);
+
+            RootContainer.Stake = 1M;
+
+            CalculateStake(RootContainer);
+
+            PrintReport(RootContainer);
+            PrintReport(payrollContainer);
+            PrintReport(shareholderContainer);
         }
 
-        static void CalculateStake()
+        static void CalculateStake(Container<IStaker> container)
         {
-            foreach (User user in container)
+            foreach (IStaker staker in container)
             {
-                user.Stake = (decimal)timecard.HoursWorkedTodayByUser(user) / timecard.TotalHoursWorked;
+                staker.Stake = (decimal) 1 / container.Stakers.Count;
+                if (staker is Container<IStaker> childContainer)
+                    CalculateStake(childContainer);
             }
-            
+
         }
 
-        static void CalculateDailyProfit()
+        static void PrintReport(Container<IStaker> container)
         {
-            foreach (User user in container)
-            {
-                user.DailyProfit = user.Stake * DailyGrossProfit;
-            }
-        }
-
-        static void PrintReport()
-        {
-            foreach (User user in container)
-            {
-                Console.WriteLine($"User: {user.Name}\n\tStake: {user.Stake:f6}\n\tDailyProfit: {user.DailyProfit:c}\n");
-            }
+            foreach (IStaker staker in container)
+                if (staker is User user)
+                    Console.WriteLine($"User: {user.Name}\n\tStake: {user.Stake:f6}\n\tDailyProfit: {user.Reward:c}\n");
         }
     }
 }

@@ -31,5 +31,10 @@ namespace rediRND
             get => Stakers[index];
             set => Stakers[index] = value;
         }
+
+        public void Add(T t)
+        {
+            Stakers.Add(t);
+        }
     }
 }

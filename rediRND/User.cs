@@ -15,6 +15,6 @@ namespace rediRND
 
         public string Name { get; set; }
         public decimal Stake { get; set; }
-        public decimal DailyProfit { get; set; }
+        public decimal Reward { get; set; }
     }
 }
