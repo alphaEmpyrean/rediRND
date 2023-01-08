@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace rediRND
 {
-    internal class User : IStaker
+    public class User : IStaker
     {
         public User(string name) 
         {
@@ -14,7 +14,7 @@ namespace rediRND
         }
 
         public string Name { get; set; }
-        public decimal Stake { get; set; }
-        public decimal Reward { get; set; }
+        public Stake Stake { get; set; } = new Stake(0m);
+
     }
 }

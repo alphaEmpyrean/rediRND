@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace rediRND
 {
-    internal interface IStaker
+    public interface IStaker
     {
-        decimal Stake { get; set; }
+        public Stake Stake { get; set; }
+
     }
 }
