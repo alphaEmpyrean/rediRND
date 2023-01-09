@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,52 +7,52 @@ using System.Threading.Tasks;
 
 namespace rediRND
 {
-    public partial class StakerContainer<T> : IEnumerable<T>, IEnumerable, IStaker where T : IStaker
+    internal class Container
     {
-        public StakerContainer(string name, IStakeCalculator<StakerContainer<T>> stakerCalculator, IStaker[] stakers)
+        decimal _stake;
+        readonly decimal[] _stakers;
+
+        public Container(decimal stake, decimal[] stakers)
         {
-            Name = name;
-            StakeCalculator = stakerCalculator;
-            Stakers = stakers.ToList();
-            Stake = name == "Root" ? new Stake(1M) : new Stake(0M);
+            _stake = stake;
+            _stakers = stakers;
         }
 
-        public void CalculateStakes()
+        public decimal Stake 
+        { 
+            get { return _stake; }
+            set { _stake = value; }
+        }
+        
+        public decimal[] Stakers
         {
-            StakeCalculator.Calculate(this);
+            get 
+            {
+                decimal[] returnArray = new decimal[_stakers.Length];
+                _stakers.CopyTo(returnArray, 0);
+                return returnArray;
+            }
         }
 
-        public List<IStaker> Stakers { get; private set; }
-        public Stake Stake { get; set; }
-        public IStakeCalculator<StakerContainer<T>> StakeCalculator { get; set; }
-        public string Name { get; private set; }
-
-        public void Add(T staker)
+        public void CalculateEvenSplit()
         {
-            Stakers.Add(staker);
-            CalculateStakes();
-        }
-    }
-
-    public partial class StakerContainer<T> : IEnumerable<T>, IEnumerable, IStaker where T : IStaker
-    {
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return ((IEnumerable<T>)Stakers).GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Stakers.GetEnumerator();
+            decimal stake = 1m / _stakers.Length;
+            for (int i = 0; i < _stakers.Length; i++)
+                _stakers[i] = stake;
         }
 
-
-
-        public IStaker this[int index]
-        {
-            get => Stakers[index];
-            set => Stakers[index] = value;
+        public void CalculateWeightedSplit(int[] weights)
+        {            
+            for (int i = 0; i < _stakers.Length; i++)
+                _stakers[i] = (decimal) weights[i] / weights.Sum();
         }
 
+        public void PrintStakers()
+        {
+            for (int i = 0; i < _stakers.Length; i++)
+            {
+                Console.WriteLine($"Staker {i + 1} - Stake: {_stakers[i]:g5}");
+            }
+        }
     }
 }
