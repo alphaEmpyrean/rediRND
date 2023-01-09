@@ -9,15 +9,20 @@ namespace rediRND
 {
     internal class Container
     {
-        decimal _stake;
         readonly decimal[] _stakers;
+        string _name;
+        decimal _stake = 0M;
 
-        public Container(decimal stake, decimal[] stakers)
+        public Container(string name, decimal[] stakers)
         {
-            _stake = stake;
             _stakers = stakers;
+            _name = name;
         }
 
+        public string Name
+        {
+            get { return _name; }
+        }
         public decimal Stake 
         { 
             get { return _stake; }
@@ -26,32 +31,27 @@ namespace rediRND
         
         public decimal[] Stakers
         {
-            get 
-            {
-                decimal[] returnArray = new decimal[_stakers.Length];
-                _stakers.CopyTo(returnArray, 0);
-                return returnArray;
-            }
+            get { return _stakers; }
         }
 
         public void CalculateEvenSplit()
         {
-            decimal stake = 1m / _stakers.Length;
-            for (int i = 0; i < _stakers.Length; i++)
-                _stakers[i] = stake;
+            decimal stake = 1m / Stakers.Length;
+            for (int i = 0; i < Stakers.Length; i++)
+                Stakers[i] = stake;
         }
 
         public void CalculateWeightedSplit(int[] weights)
         {            
-            for (int i = 0; i < _stakers.Length; i++)
-                _stakers[i] = (decimal) weights[i] / weights.Sum();
+            for (int i = 0; i < Stakers.Length; i++)
+                Stakers[i] = (decimal) weights[i] / weights.Sum();
         }
 
         public void PrintStakers()
         {
-            for (int i = 0; i < _stakers.Length; i++)
+            for (int i = 0; i < Stakers.Length; i++)
             {
-                Console.WriteLine($"Staker {i + 1} - Stake: {_stakers[i]:g5}");
+                Console.WriteLine($"Staker {i + 1} - Stake: {Stakers[i]:g5}");
             }
         }
     }

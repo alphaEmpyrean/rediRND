@@ -4,17 +4,21 @@
     {
         static void Main(string[] args)
         {
-            Container container = new Container(1m, new decimal[10]);
+            Container firstContainer = new Container("first", new decimal[3]);
+            Container secondContainer = new Container("second", new decimal[4]);
 
-            container.CalculateEvenSplit();
-            container.PrintStakers();
+            ContainerStructural rootContainer = new ContainerStructural( 1M, new Container[] {firstContainer, secondContainer});
 
-            int[] weights = new int[container.Stakers.Length];
-            for (int i = 0; i < weights.Length; i++)
-                weights[i] = i;
+            int[] weights = new int[] {1, 3};            
 
-            container.CalculateWeightedSplit(weights);
-            container.PrintStakers();
+            rootContainer.CalculateWeightedSplit(weights);
+            rootContainer.PrintContainers();
+
+            firstContainer.CalculateEvenSplit();
+            firstContainer.PrintStakers();
+
+            secondContainer.CalculateWeightedSplit(new int[] {8, 16, 13, 35});
+            secondContainer.PrintStakers();
 
         }
 
