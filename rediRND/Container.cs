@@ -4,55 +4,55 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace rediRND
 {
-    internal class Container
+    internal class Container<T> :IStaker where T : IStaker
     {
-        readonly decimal[] _stakers;
-        string _name;
-        decimal _stake = 0M;
+        readonly IStaker[] _contents;
+        readonly string _name;
+        decimal _stake;
 
-        public Container(string name, decimal[] stakers)
+        public Container(string name, T[] initialContents)
         {
-            _stakers = stakers;
+            _contents = new IStaker[initialContents.Length];
+            Array.Copy(initialContents, Contents, _contents.Length);
             _name = name;
+            _stake = 0m;
         }
 
-        public string Name
+        public IStaker[] Contents { get { return _contents; } }
+        public int Length { get { return _contents.Length; } }
+        public string Name { get { return _name; } }
+        public decimal Stake
         {
-            get { return _name; }
-        }
-        public decimal Stake 
-        { 
             get { return _stake; }
             set { _stake = value; }
         }
-        
-        public decimal[] Stakers
+
+        public IStaker this[int index] 
         {
-            get { return _stakers; }
+            get { return _contents[index]; }
+            set { _contents[index] = value;}
         }
 
-        public void CalculateEvenSplit()
+        public void PrintContents()
         {
-            decimal stake = 1m / Stakers.Length;
-            for (int i = 0; i < Stakers.Length; i++)
-                Stakers[i] = stake;
-        }
-
-        public void CalculateWeightedSplit(int[] weights)
-        {            
-            for (int i = 0; i < Stakers.Length; i++)
-                Stakers[i] = (decimal) weights[i] / weights.Sum();
-        }
-
-        public void PrintStakers()
-        {
-            for (int i = 0; i < Stakers.Length; i++)
+            for (int i = 0; i < Contents.Length; i++)
             {
-                Console.WriteLine($"Staker {i + 1} - Stake: {Stakers[i]:g5}");
+                Console.WriteLine($"{typeof(T)} {Contents[i].Name} - Stake: {Contents[i].Stake:g5}");
             }
         }
-    }
+
+        public static implicit operator Container<T>(Container<Container<IStaker>> v)
+        {
+            Container<T> temp = new Container<T>(v.Name, new T[v.Length]);
+            for (var i = 0; i < v.Length; i++)
+            {
+                temp.Contents[i] = v[i];
+            }
+            return temp;
+        }
+    }    
 }
