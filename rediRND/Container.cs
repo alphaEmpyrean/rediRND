@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,80 +12,71 @@ using System.Xml.Linq;
 
 namespace rediRND
 {
-    internal class Container<T> : Dictionary<T, int>, IStaker where T : IStaker
-    {
-        readonly string _name;
-        decimal _stake;
+    internal class Container : Dictionary<IStaker, int> , IContainer, IStaker
+    { 
 
         public Container(string name) : base()
         {
-            _name = name;
-            _stake = 0m;
+            Name = name;
         }
 
-        public Container(string name, T[] initialContents) : base()
+        public Container(string name, IStaker[] initialContents) : base()
         {
-            foreach (T item in initialContents) 
+            foreach (IStaker item in initialContents) 
             {
                 Add(item, 0);
             }
-            _name = name;
-            _stake = 0m;
+            Name = name;
             CalculateStake(false);
         }
 
-        public string Name { get { return _name; } }
-        public decimal Stake
-        {
-            get { return _stake; }
-            set { _stake = value; }
-        }
-        public Container<IStaker> ?Parent { get; set; }
+        public string Name { get; set; }
+        public Container ?Parent { get; set; }
+        public decimal Stake { get; set; } = 0;
 
         public void PrintContents(bool isRecursive)
         {
             Console.WriteLine("***" + this);
-            List<Container<T>> childContainers = new();
-            foreach (T item in Keys)
+            List<Container> childContainers = new();
+            foreach (IStaker item in Keys)
             {
                 Console.WriteLine("\t" + item);
-                if (item is Container<T> childContainer)
+                if (item is Container childContainer)
                     childContainers.Add(childContainer);
             }
             Console.WriteLine();
             if (isRecursive)
-                foreach (Container<T> childContainer in childContainers)
+                foreach (Container childContainer in childContainers)
                     childContainer.PrintContents(true);
         }
+
         public void CalculateStake(bool isRecursive)
         {
             int total = this.Values.Sum();
 
-            foreach (T item in Keys)
+            foreach (IStaker item in Keys)
             {
                 item.Stake += (total == 0) ? 0 : (decimal)this[item] / total * Stake;
-                    if (isRecursive && item is Container<T> childContainer)
+                    if (isRecursive && item is Container childContainer)
                         childContainer.CalculateStake(true);
             }
         }
-        public void SetWeight(T staker, int weight)
+
+        public void SetWeight(IStaker staker, int weight)
         {
             this[staker] = weight;
         }
-        public new void Add(T t, int i)
+
+        public new void Add(IStaker t, int i)
         {
             t.Parent = this;
             base.Add(t, i);
         }
-        public void Add(T t)
-        {
-            t.Parent = (Container<IStaker>) this;
-            base.Add(t, 0);
-        }
 
-        public static explicit operator Container<IStaker>(Container<T> v)
+        public void Add(IStaker t)
         {
-            foreach ()
+            t.Parent = this;
+            base.Add(t, 0);
         }
 
         public override string ToString()
