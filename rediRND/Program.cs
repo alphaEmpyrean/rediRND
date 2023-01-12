@@ -1,48 +1,55 @@
-﻿namespace rediRND
+﻿using System.Collections.ObjectModel;
+
+namespace rediRND
 {
     internal class Program
     {
+
+        
         static void Main(string[] args)
         {
+            // root container
+            Container<IStaker> rootContainer = new("Root", Array.Empty<IStaker>());
+            rootContainer.Stake = 1m;
+
+            // create users
+            Staker[] stakersArray = new Staker[] 
+            { 
+                new Staker("Josh"), new Staker("Mike"), new Staker("Chris"), new Staker("Kelly"), 
+                new Staker("Jaxon"), new Staker("Jarrad"), new Staker("Garrett"), new Staker("Knox") 
+            };
+            Container<Staker> stakers = new ("StakerObjects", stakersArray);
 
             // build structure
-            IStaker[] stakers = new Staker[] {new Staker("Josh"), new Staker("Mike"), new Staker("Chris"), new Staker("Kelly"), new Staker("Jaxon"), new Staker("Jarrad"), new Staker("Garrett"), new Staker("Knox") };
-            Container<IStaker>[] containers = new Container<IStaker>[6];
+            Container<IStaker> business = new("Business");
+            Container<IStaker> employees = new("Employees");
+            Container<IStaker> shareholders = new("Shareholders");
 
-            Container<IStaker> thirdContainer = new("first", new IStaker[] { stakers[0], stakers[1], stakers[2] });
-            containers[5] = thirdContainer;
-            Container<IStaker> fourthContainer = new("second", new IStaker[] { stakers[4], stakers[5], stakers[6], stakers[7] });
-            containers[4] = fourthContainer;
+            rootContainer.Add(business, 55);
+            rootContainer.Add(employees, 42);
+            rootContainer.Add(shareholders, 3);
 
-            Container<Container<IStaker>> structuralContainer = new("Structural", new Container<IStaker>[] { thirdContainer, fourthContainer });
-            containers[3] = structuralContainer;
+            Container<IStaker> general = new("General");
+            Container<IStaker> mentors = new("Mentors");
 
-            Container<IStaker> firstContainer = new("first", new IStaker[] { stakers[0], stakers[1], stakers[2] });
-            containers[2] = firstContainer;
-            Container<IStaker> secondContainer = new("second", new IStaker[] { stakers[4], stakers[5], stakers[6], stakers[7] });
-            containers[1] = secondContainer;
+            employees.Add(general, 10);
+            employees.Add(mentors, 11);
 
-            Container<Container<IStaker>> rootContainer = new("Root", new Container<IStaker>[] { firstContainer, secondContainer, structuralContainer });
-            containers[0] = rootContainer;
+            // add users
+            shareholders.Add(stakersArray[0], 1);
+            mentors.Add(stakersArray[0], 1);
 
-            // Calculate Stakes
+            general.Add(stakersArray[2], 1);
+            general.Add(stakersArray[3], 1);
+            general.Add(stakersArray[1], 1);
+            general.Add(stakersArray[4], 1);
+            general.Add(stakersArray[5], 1);
+            general.Add(stakersArray[6], 1);
+            general.Add(stakersArray[7], 1);
 
-            rootContainer.Stake = 1M;
+            rootContainer.CalculateStake(true);
+            rootContainer.PrintContents(true);
 
-            StakeCalculator.CalculateWeightedStake(rootContainer, new int[] { 1, 2, 1 });
-
-            StakeCalculator.CalculateEvenStake(firstContainer);
-            StakeCalculator.CalculateEvenStake(structuralContainer);
-            StakeCalculator.CalculateEvenStake(secondContainer);
-
-            StakeCalculator.CalculateWeightedStake(thirdContainer, new int[] { 1, 2, 1 });
-            StakeCalculator.CalculateEvenStake(fourthContainer);
-
-            // Print Stakes
-            for (var i = 0; i < containers.Length; i++)
-            {
-                containers[i].PrintContents();
-            }
         }
     }
 }

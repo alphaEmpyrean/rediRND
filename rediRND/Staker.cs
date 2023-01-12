@@ -21,10 +21,18 @@ namespace rediRND
         { 
             get { return _name; } 
         }
+        public Container<IStaker> ?Parent { get; set; }
         public decimal Stake 
         { 
             get { return _stake; } 
             set { _stake = value; }
+        }
+
+        public override string ToString()
+        {
+            return Parent is null ?
+                $"{this.Name} Container>\tStake: {this.Stake:g5}" :
+                $"{this.Name} Container>\tParent: {Parent.Name}\tWeight: {Parent[this]:g5}\tStake: {this.Stake:g5}";
         }
     }
 }

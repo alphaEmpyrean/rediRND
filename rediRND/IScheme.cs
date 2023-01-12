@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace rediRND
 {
-    internal interface IStaker : IIdentifiable, IContainable<IStaker>
+    internal interface IScheme : IStaker
     {
-        public decimal Stake { get; set; }
+        public TimeSpan Duration { get; set; }
     }
 }
