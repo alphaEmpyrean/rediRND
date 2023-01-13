@@ -14,4 +14,10 @@ namespace rediRND
 
     }
 
+    internal interface IContainer<T> : IStaker where T : IStaker
+    {
+        public void SetWeight(T staker, int weight);
+
+    }
+
 }

@@ -83,7 +83,21 @@ namespace rediRND
         {
             return Parent is null ?
                 $"{this.Name} Container>\tStake: {this.Stake:g5}" :
-                $"{this.Name} Container>\tParent: {Parent.Name}\tWeight: {Parent[this]:g5}\tStake: {this.Stake:g5}";
+                $"{this.Name} Container>\tParent: {Parent.Name}\tWeight: {Parent[this]:g5}\tStake: {this.Stake:p5}";
+        }
+    }
+
+    internal class Container<T> : Container where T : IStaker
+    {
+
+        public Container(string name, T[] initialContents) : base(name)
+        {
+            foreach (IStaker item in initialContents)
+            {
+                Add(item, 0);
+            }
+            Name = name;
+            CalculateStake(false);
         }
     }
 }

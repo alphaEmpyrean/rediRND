@@ -9,16 +9,16 @@ namespace rediRND
         static void Main(string[] args)
         {
             // root container
-            Container rootContainer = new("Root", Array.Empty<IStaker>());
+            Container<IStaker> rootContainer = new("Root", Array.Empty<IStaker>());
             rootContainer.Stake = 1m;
 
             // create users
             Staker[] stakersArray = new Staker[]
             {
-                new Staker("Josh"), new Staker("Mike"), new Staker("Chris"), new Staker("Kelly"),
+                new Staker("Josh"), new Staker("Kristen"), new Staker("Brooke"), new Staker("Kelly"),
                 new Staker("Jaxon"), new Staker("Jarrad"), new Staker("Garrett"), new Staker("Knox")
             };
-            Container stakers = new("StakerObjects", stakersArray);
+            Container<Staker> stakers = new("StakerObjects", stakersArray);
 
             // build structure
             Container business = new("Business");
@@ -33,15 +33,20 @@ namespace rediRND
             Container mentors = new("Mentors");
 
             employees.Add(general, 10);
-            employees.Add(mentors, 11);
+            employees.Add(mentors, 1);
 
             // add users
             shareholders.Add(stakersArray[0], 1);
             mentors.Add(stakersArray[0], 1);
+            general.Add(stakersArray[0], 1);
 
-            general.Add(stakersArray[2], 1);
-            general.Add(stakersArray[3], 1);
+            shareholders.Add(stakersArray[1], 1);
             general.Add(stakersArray[1], 1);
+
+            shareholders.Add(stakersArray[2], 1);
+            general.Add(stakersArray[2], 1);
+
+            general.Add(stakersArray[3], 1);
             general.Add(stakersArray[4], 1);
             general.Add(stakersArray[5], 1);
             general.Add(stakersArray[6], 1);

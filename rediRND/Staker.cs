@@ -21,7 +21,7 @@ namespace rediRND
         { 
             get { return _name; } 
         }
-        public Container Parent { get; set; }
+        public Container ?Parent { get; set; }
         public decimal Stake 
         { 
             get { return _stake; } 
@@ -32,7 +32,7 @@ namespace rediRND
         {
             return Parent is null ?
                 $"{this.Name} >\tStake: {this.Stake:g5}" :
-                $"{this.Name} >\tParent: {Parent.Name}\tWeight: {Parent[this]:g5}\tStake: {this.Stake:g5}";
+                $"{this.Name} >\tParent: {Parent.Name}\tWeight: {Parent[this]:g5}\tStake: {this.Stake:p5}";
         }
     }
 }
